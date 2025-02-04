@@ -86,7 +86,7 @@ public class SessionDataUnit {
         boolean isDsAvailable = false;
         int dsChecks = 0;
         int maxDsChecks = Integer.parseInt(config.getDsCheckCount());
-        double checkInterval = Double.parseDouble(config.getDsWaitInterval());
+        int checkInterval = Integer.parseInt(config.getDsWaitInterval());
 
         while (dsChecks < maxDsChecks) {
 
@@ -101,7 +101,7 @@ public class SessionDataUnit {
                 break;
             }
 
-            Thread.sleep((long) (checkInterval * 10 * 1000)); // Convert seconds to milliseconds
+            Thread.sleep(checkInterval * 10);
             dsChecks++;
             System.out.printf("check %d/%d: DS not available yet. Retrying...%n", dsChecks, maxDsChecks);
         }
