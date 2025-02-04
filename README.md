@@ -135,7 +135,7 @@ your own logic for the custom functions.
    - For `Shared Cloud` tier e.g.  https://spaceshooter.prod.gamingservices.accelbyte.io
    - For `Private Cloud` tier e.g.  https://dev.accelbyte.io
 
-   b. [Create a Game Namespace](https://docs.accelbyte.io/gaming-services/services/access/namespaces/manage-your-namespaces/#create-a-game-namespace) if you don't have one yet. Keep the `Namespace ID`.
+   b. [Create a Game Namespace](https://docs.accelbyte.io/gaming-services/services/access/reference/namespaces/manage-your-namespaces/) if you don't have one yet. Keep the `Namespace ID`.
 
    c. [Create an OAuth Client](https://docs.accelbyte.io/gaming-services/services/access/authorization/manage-access-control-for-applications/#create-an-iam-client) with confidential client type. Keep the `Client ID` and `Client Secret`.
 
@@ -265,7 +265,7 @@ public IP, we can use something like [ngrok](https://ngrok.com/).
 
 After done testing, you may want to deploy this app to `AccelByte Gaming Services`.
 
-1. [Create a new Extend Override App on Admin Portal](https://docs.accelbyte.io/gaming-services/services/extend/override-ags-feature/getting-started-with-cloudsave-validator-customization/#create-the-extend-app). Keep the `Repository URI`.
+1. [Create a new Extend Override App on Admin Portal](https://docs.accelbyte.io/gaming-services/services/extend/override/getting-started-with-session-customization-server-dsm/#create-the-extend-app). Keep the `Repository URI`.
 
 2. Download and setup [extend-helper-cli](https://github.com/AccelByte/extend-helper-cli/) (only if it has not been done previously).
 
@@ -298,4 +298,4 @@ After done testing, you may want to deploy this app to `AccelByte Gaming Service
 
 ## Next Step
 
-Proceed to create your own `Extend Override` app for `session dsm grpc plugin server` by modifying this project. See [here](https://docs.accelbyte.io/gaming-services/services/extend/override-ags-feature/session-dsm-function/) for more details.
+Proceed to create your own `Extend Override` app for `session dsm grpc plugin server` by modifying this project. See [here](https://docs.accelbyte.io/gaming-services/services/extend/override/session-dsm-function/) for more details.
