@@ -1,7 +1,6 @@
 package net.accelbyte.session.sessiondsm.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.accelbyte.sdk.core.AccelByteConfig;
 import net.accelbyte.sdk.core.AccelByteSDK;
 import net.accelbyte.sdk.core.client.OkhttpClient;
 import net.accelbyte.sdk.core.repository.DefaultConfigRepository;
@@ -13,18 +12,17 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfiguration {
     @Bean
     public AccelByteSDK accelbyteSdk() {
-        var configRepository = new DefaultConfigRepository();
+        final OkhttpClient okhttpClient = new OkhttpClient();
+        final DefaultTokenRefreshRepository tokenRefreshRepository = new DefaultTokenRefreshRepository();
+        final DefaultConfigRepository configRepository = new DefaultConfigRepository();
 
-        // Enable local token validation
         configRepository.setLocalTokenValidationEnabled(true);
         configRepository.setJwksRefreshInterval(300);
         configRepository.setRevocationListRefreshInterval(300);
 
-        final AccelByteConfig config = new AccelByteConfig(
-                new OkhttpClient(), new DefaultTokenRefreshRepository(),
-                configRepository);
+        final AccelByteSDK sdk = new AccelByteSDK(okhttpClient, tokenRefreshRepository, configRepository);
 
-        return new AccelByteSDK(config);
+        return sdk;
     }
 
     @Bean

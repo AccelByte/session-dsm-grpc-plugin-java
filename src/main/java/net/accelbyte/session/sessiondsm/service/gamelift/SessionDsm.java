@@ -12,7 +12,13 @@ import com.amazonaws.services.gamelift.model.CreateGameSessionRequest;
 import com.amazonaws.services.gamelift.model.CreateGameSessionResult;
 import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+
+import net.accelbyte.sdk.api.session.models.ApimodelsUpdateGamesessionDSInformationRequest;
+import net.accelbyte.sdk.api.session.operations.game_session.AdminUpdateDSInformation;
+import net.accelbyte.sdk.api.session.wrappers.GameSession;
+import net.accelbyte.sdk.core.AccelByteSDK;
 import net.accelbyte.session.sessiondsm.*;
 import net.accelbyte.session.sessiondsm.model.ServerStatusType;
 import net.accelbyte.session.sessiondsm.model.ServerServiceType;
@@ -24,24 +30,33 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("GAMELIFT")
 public class SessionDsm extends SessionDsmGrpc.SessionDsmImplBase {
 
+    private AccelByteSDK sdk;
+
     private final AmazonGameLift gameLiftClient;
 
     private final AppConfigRepository config = new AppConfigRepository();
 
-    public SessionDsm() {
+    @Autowired
+    public SessionDsm(AccelByteSDK sdk) {
+        this.sdk = sdk;
+
+        this.sdk.loginClient();
+
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
                 config.getAwsAccessKeyId(),
-                config.getAwsSecretAccessKey()
-        );
+                config.getAwsSecretAccessKey());
 
         this.gameLiftClient = AmazonGameLiftClientBuilder.standard()
                 .withRegion(config.getAwsRegion())
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
+
+        log.info("SessionDsm GAMELIFT service initialized");
     }
 
     @Override
-    public void createGameSession(RequestCreateGameSession request, StreamObserver<ResponseCreateGameSession> responseObserver) {
+    public void createGameSession(RequestCreateGameSession request,
+            StreamObserver<ResponseCreateGameSession> responseObserver) {
         if (request.getRequestedRegionList().isEmpty()) {
             log.info("Please provide requested region.");
         }
@@ -89,7 +104,8 @@ public class SessionDsm extends SessionDsmGrpc.SessionDsmImplBase {
     }
 
     @Override
-    public void terminateGameSession(RequestTerminateGameSession request, StreamObserver<ResponseTerminateGameSession> responseObserver) {
+    public void terminateGameSession(RequestTerminateGameSession request,
+            StreamObserver<ResponseTerminateGameSession> responseObserver) {
         log.info("createGameSession in GAMELIFT");
         ResponseTerminateGameSession response = ResponseTerminateGameSession.newBuilder()
                 .setNamespace(request.getNamespace())
@@ -97,6 +113,45 @@ public class SessionDsm extends SessionDsmGrpc.SessionDsmImplBase {
                 .setSessionId(request.getSessionId())
                 .setSuccess(true)
                 .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void createGameSessionAsync(RequestCreateGameSession request,
+            StreamObserver<ResponseCreateGameSessionAsync> responseObserver) {
+        ResponseCreateGameSessionAsync response = ResponseCreateGameSessionAsync.newBuilder()
+                .setSuccess(true)
+                .setMessage("success")
+                .build();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    GameSession wrapper = new GameSession(sdk);
+                    AdminUpdateDSInformation operation = AdminUpdateDSInformation
+                            .builder()
+                            .namespace(request.getNamespace())
+                            .sessionId(request.getSessionId())
+                            .body(ApimodelsUpdateGamesessionDSInformationRequest.builder()
+                                    .status("AVAILABLE")
+                                    .port(1223)
+                                    .serverId("123455")
+                                    .ip("192.168.1.1")
+                                    .description("testing")
+                                    .build())
+                            .build();
+
+                    wrapper.adminUpdateDSInformation(operation);
+                } catch (Exception e) {
+                    log.error("Error updating DS information", e);
+                }
+            }
+        });
+        thread.start();
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
