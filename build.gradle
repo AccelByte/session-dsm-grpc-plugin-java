@@ -25,7 +25,7 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.24'
 	implementation 'org.springframework.boot:spring-boot-starter:2.7.5'
 	implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator:2.7.5'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.0.0'
 	implementation 'com.google.api:gax:2.59.1'
 	implementation 'com.google.cloud:google-cloud-compute:1.66.0'
 	implementation 'com.amazonaws:aws-java-sdk:1.11.434'
